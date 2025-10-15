@@ -6,11 +6,11 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [Subscription::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(
-    DateConverter::class,
-    PeriodUnitConverter::class
+    DateConverter::class, PeriodUnitConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun subscriptionDao(): SubscriptionDao

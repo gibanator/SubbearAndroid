@@ -11,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import dagger.hilt.android.AndroidEntryPoint
 import fi.gibanator.subbearandroid.ui.main.SubscriptionCard
+import fi.gibanator.subbearandroid.ui.main.UpcomingSubscriptionsScreen
 import fi.gibanator.subbearandroid.ui.theme.SubbearAndroidTheme
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,11 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SubbearAndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SubscriptionCard(
-                        "aaa",
-                        {},
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    UpcomingSubscriptionsScreen(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
