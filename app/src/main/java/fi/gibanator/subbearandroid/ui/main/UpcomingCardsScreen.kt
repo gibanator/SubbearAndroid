@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,18 +36,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import fi.gibanator.subbearandroid.R
 import fi.gibanator.subbearandroid.data.PeriodUnit
 import fi.gibanator.subbearandroid.data.Subscription
+import fi.gibanator.subbearandroid.navigation.AddSubscription
 import java.time.LocalDate
 
 
 @Composable
 fun UpcomingSubscriptionsScreen(
-    modifier: Modifier = Modifier,
-    vm: UpcomingSubscriptionViewModel = hiltViewModel()
+    //modifier: Modifier = Modifier,
+    vm: UpcomingSubscriptionViewModel = hiltViewModel(),
+    navController: NavController
 ) {
-    val subs by vm.subCards.collectAsState()
+    val subs by vm.subCards.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -56,10 +60,12 @@ fun UpcomingSubscriptionsScreen(
         UpcomingSubscriptionsList(
             subs,
             {},
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.fillMaxSize()
         )
         GradientFab(
-            { vm.addSubscription() },
+            {
+                navController.navigate(AddSubscription.route)
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp)
@@ -72,9 +78,11 @@ fun UpcomingSubscriptionsList(
     onSubscriptionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn {
-        items(subs.size) { sub ->
-            SubscriptionCard(subs[sub].name, onSubscriptionClick)
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(subs) { sub ->
+            SubscriptionCard(sub.name, sub.price, onSubscriptionClick)
         }
     }
 }
@@ -82,6 +90,7 @@ fun UpcomingSubscriptionsList(
 @Composable
 fun SubscriptionCard(
     cardText: String,
+    cardPrice: Double,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,6 +121,8 @@ fun SubscriptionCard(
                 cardText,
                 textAlign = TextAlign.Center,
             )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = "$${String.format("%.2f", cardPrice)}")
         }
     }
 }
@@ -143,7 +154,7 @@ fun GradientFab(
 @Preview
 @Composable
 fun SubCardPreview(){
-    SubscriptionCard("Netflix", {})
+    SubscriptionCard("Netflix", 12.99, {})
 }
 
 @Preview(showBackground = true)
@@ -152,6 +163,7 @@ fun SubListPreview(){
     val prevList: List<Subscription> = listOf(
         Subscription(
             1, "aaa",
+            price = 14.99,
             logoUri = "",
             periodUnit = PeriodUnit.DAY,
             unitCount = 1,
